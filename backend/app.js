@@ -1,22 +1,22 @@
 // import installed dependencies
-require(dotenv).config();
-const express = require('express');
-const app = express();
-const cors = require('cors');
-const bodyParser = require('body-parser');
-const bcrypt = require('bcrypt');
-const multer = require('multer');
-const helmet = require('helmet');
-const morgan = require('morgan');
-const mongoose = require('mongoose');
+import dotenv from 'dotenv';
+import express from 'express';
+import cors from 'cors';
+import bodyParser from 'body-parser';
+import bcrypt from 'bcrypt';
+import multer from 'multer';
+import helmet from 'helmet';
+import morgan from 'morgan';
+import mongoose from 'mongoose';
 
-import { log } from 'console';
 // import native dependencies
 import path from 'path';
 import { fileURLToPath } from 'url';
 
 // configurations
-const port = process.env.PORT || 3001;
+dotenv.config();
+const app = express();
+const port = process.env.PORT || 6001;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -45,7 +45,15 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// run backend
-app.listen(port, () => {
-	console.log(`Listening on port ${port}`);
-});
+// mongoose setup
+mongoose.connect(process.env.MONGO_URL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+}).then(()=>{
+	// run backend
+	app.listen(port, () => {
+		console.log(`Listening on port ${port}`)
+	})
+}).catch((err)=>{
+    console.log(`${err} did not connect`);
+})
